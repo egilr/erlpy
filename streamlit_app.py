@@ -7,39 +7,48 @@ import requests
 from datetime import date
 
 
-"""
-# El Spot Prices!
-"""
 
-today = date.today()
-iso_date = today.isoformat()
-url = "https://api.energidataservice.dk/dataset/Elspotprices?start=" + str(iso_date) + "&filter={%22PriceArea%22:%22dk2%22}"
-data = requests.get(url).json()
-records = data["records"]
+def check_password():
+    """Returns `True` if the user had the correct password."""
 
-# st.write(records)
+    def password_entered():
+        """Checks whether a password entered by the user is correct."""
+        if st.session_state["password"] == st.secrets["password"]:
+            st.session_state["password_correct"] = True
+            del st.session_state["password"]  # don't store password
+        else:
+            st.session_state["password_correct"] = False
 
-st.dataframe(records)
+    if "password_correct" not in st.session_state:
+        # First run, show input for password.
+        st.text_input(
+            "Password", type="password", on_change=password_entered, key="password"
+        )
+        return False
+    elif not st.session_state["password_correct"]:
+        # Password not correct, show input + error.
+        st.text_input(
+            "Password", type="password", on_change=password_entered, key="password"
+        )
+        st.error("😕 Password incorrect")
+        return False
+    else:
+        # Password correct.
+        return True
+
+if check_password():
+    """
+    # El Spot Prices!
+    """
+
+    today = date.today()
+    iso_date = today.isoformat()
+    url = "https://api.energidataservice.dk/dataset/Elspotprices?start=" + str(iso_date) + "&filter={%22PriceArea%22:%22dk2%22}"
+    data = requests.get(url).json()
+    records = data["records"]
+
+
+    st.dataframe(records)
 
 
 
-# with st.echo(code_location='below'):
-#     total_points = st.slider("Number of points in spiral", 1, 5000, 2000)
-#     num_turns = st.slider("Number of turns in spiral", 1, 100, 9)
-
-#     Point = namedtuple('Point', 'x y')
-#     data = []
-
-#     points_per_turn = total_points / num_turns
-
-#     for curr_point_num in range(total_points):
-#         curr_turn, i = divmod(curr_point_num, points_per_turn)
-#         angle = (curr_turn + 1) * 2 * math.pi * i / points_per_turn
-#         radius = curr_point_num / total_points
-#         x = radius * math.cos(angle)
-#         y = radius * math.sin(angle)
-#         data.append(Point(x, y))
-
-#     st.altair_chart(alt.Chart(pd.DataFrame(data), height=500, width=500)
-#         .mark_circle(color='#0068c9', opacity=0.5)
-#         .encode(x='x:Q', y='y:Q'))
