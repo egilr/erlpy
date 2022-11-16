@@ -8,7 +8,7 @@ from datetime import date
 
 
 """
-# Welcome to Streamlit!
+# El Spot Prices!
 """
 
 today = date.today()
