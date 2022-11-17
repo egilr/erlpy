@@ -38,12 +38,11 @@ def check_password():
         return True
 
 if check_password():
-    """
-    # El Spot Prices!
-    """
-
     today = date.today()
     iso_date = today.isoformat()
+
+    st.title("El Spot Prices - Today " + str(today))
+        
     url = "https://api.energidataservice.dk/dataset/Elspotprices?start=" + str(iso_date) + "&filter={%22PriceArea%22:%22dk2%22}"
     data = requests.get(url).json()
     records = data["records"]
